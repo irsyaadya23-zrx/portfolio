@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Portfolio Navigation - Ultimate Balance Fix</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --bg: #020617;
+            --ios-spring: cubic-bezier(0.4, 0, 0.2, 1.2);
+            --nav-width: 600px; /* Batas lebar desktop agar balance */
+        }
+
+        * { 
+            scroll-behavior: smooth; 
+            box-sizing: border-box; 
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: var(--bg);
+            color: white; margin: 0;
+            font-family: -apple-system, system-ui, sans-serif;
+            overflow-x: hidden;
+        }
+
+        section {
+            height: 100vh; display: flex; align-items: center; justify-content: center;
+            font-size: 2.5rem; font-weight: bold; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .nav-fixed-container {
+            position: fixed; left: 0; right: 0;
+            display: flex; justify-content: center;
+            z-index: 1000; top: 30px; 
+        }
+
+        .nav-wrapper {
+            position: relative;
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            padding: 8px; border-radius: 32px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex; align-items: center;
+            touch-action: none; user-select: none;
+            width: auto;
+            max-width: 95vw;
+        }
+
+        /* Container Layers */
+        #lowLayer, .high-layer-container {
+            display: flex; 
+            align-items: center; 
+            width: 100%;
+        }
+
+        .item-common {
+            /* KUNCI UTAMA: Gunakan min-width yang sama di semua layer */
+            min-width: 110px; 
+            height: 48px;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 600; font-size: 15px;
+            position: relative;
+            flex: 1; /* Pastikan membagi ruang sama rata */
+        }
+
+        .nav-item { color: #ffffff; cursor: pointer; }
+        .icon-mobile { display: none; }
+
+        /* Layer 2: Glass Pill */
+        .glass-pill {
+            position: absolute; 
+            height: calc(100% - 16px); 
+            top: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50px; z-index: 5; pointer-events: none;
+            transition: all 0.5s var(--ios-spring);
+        }
+
+        /* Layer 3: High Layer */
+        .high-layer-container {
+            position: absolute; top: 0; left: 0; height: 100%;
+            padding: 8px; z-index: 10; pointer-events: none;
+            /* Clipping diset via JS */
+            clip-path: inset(8px 100% 8px 8px round 25px);
+            transition: clip-path 0.5s var(--ios-spring);
+        }
+
+        .high-item { 
+            color: #ffffff; 
+            /* Hilangkan scale jika menyebabkan teks tidak center, 
+               atau gunakan font-size sedikit lebih besar tapi tetap di tengah */
+            font-size: 15.5px;
+            transform: scale(1.05);
+        }
+
+        /* --- MOBILE TUNING (PRESISI) --- */
+        @media (max-width: 768px) {
+            .nav-fixed-container { top: auto; bottom: 30px; }
+            .nav-wrapper { width: 92%; padding: 6px; }
+            .item-common { min-width: 0; flex: 1; height: 50px; }
+            .text-desktop { display: none; }
+            .icon-mobile { display: flex; width: 22px; height: 22px; }
+            .glass-pill { height: calc(100% - 12px); top: 6px; }
+            .high-layer-container { padding: 6px; }
+            .high-item { transform: scale(1.2); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="nav-fixed-container">
+    <nav class="nav-wrapper" id="navContainer">
+        
+        <div id="lowLayer">
+            <div class="nav-item item-common" data-target="profile"><span class="text-desktop">Profile</span><i data-lucide="user" class="icon-mobile"></i></div>
+            <div class="nav-item item-common" data-target="skills"><span class="text-desktop">Skills</span><i data-lucide="code-2" class="icon-mobile"></i></div>
+            <div class="nav-item item-common" data-target="education"><span class="text-desktop">Education</span><i data-lucide="graduation-cap" class="icon-mobile"></i></div>
+            <div class="nav-item item-common" data-target="experiences"><span class="text-desktop">Experiences</span><i data-lucide="briefcase" class="icon-mobile"></i></div>
+            <div class="nav-item item-common" data-target="contact"><span class="text-desktop">Contact</span><i data-lucide="mail" class="icon-mobile"></i></div>
+        </div>
+
+        <div class="glass-pill" id="pill"></div>
+
+        <div class="high-layer-container" id="highLayer">
+            <div class="high-item item-common"><span class="text-desktop">Profile</span><i data-lucide="user" class="icon-mobile"></i></div>
+            <div class="high-item item-common"><span class="text-desktop">Skills</span><i data-lucide="code-2" class="icon-mobile"></i></div>
+            <div class="high-item item-common"><span class="text-desktop">Education</span><i data-lucide="graduation-cap" class="icon-mobile"></i></div>
+            <div class="high-item item-common"><span class="text-desktop">Experiences</span><i data-lucide="briefcase" class="icon-mobile"></i></div>
+            <div class="high-item item-common"><span class="text-desktop">Contact</span><i data-lucide="mail" class="icon-mobile"></i></div>
+        </div>
+    </nav>
+</div>
+
+<section id="profile">Profile</section>
+<section id="skills">Skills</section>
+<section id="education">Education</section>
+<section id="experiences">Experiences</section>
+<section id="contact">Contact</section>
+
+<script>
+    lucide.createIcons();
+    const container = document.getElementById('navContainer');
+    const lowLayer = document.getElementById('lowLayer');
+    const pill = document.getElementById('pill');
+    const highLayer = document.getElementById('highLayer');
+    const items = document.querySelectorAll('.nav-item');
+    const sections = document.querySelectorAll('section');
+
+    let isDragging = false;
+    let startX = 0;
+    let pillStartX = 0;
+    let userScrolling = true;
+
+    function updateVisuals(left, width) {
+        // Update Pill
+        pill.style.left = `${left}px`;
+        pill.style.width = `${width}px`;
+
+        // Update High Layer Clip Path
+        const containerW = container.offsetWidth;
+        const rightClip = containerW - (left + width);
+        const p = window.innerWidth <= 768 ? 6 : 8; // Match CSS Padding
+        
+        // Gunakan Template Literal yang presisi
+        highLayer.style.clipPath = `inset(${p}px ${rightClip}px ${p}px ${left}px round 32px)`;
+
+        // Update Masking Layer Bawah
+        const mask = `linear-gradient(to right, 
+            white 0px, 
+            white ${left}px, 
+            transparent ${left}px, 
+            transparent ${left + width}px, 
+            white ${left + width}px, 
+            white 100%)`;
+        
+        lowLayer.style.webkitMaskImage = mask;
+        lowLayer.style.maskImage = mask;
+    }
+
+    function snapTo(index, shouldScroll = true) {
+        const target = items[index];
+        if(!target) return;
+
+        pill.classList.remove('dragging');
+        const transition = "all 0.5s var(--ios-spring)";
+        pill.style.transition = transition;
+        highLayer.style.transition = transition;
+        lowLayer.style.transition = "mask-image 0.3s, -webkit-mask-image 0.3s";
+        
+        updateVisuals(target.offsetLeft, target.offsetWidth);
+
+        if (shouldScroll) {
+            userScrolling = false;
+            const targetId = target.getAttribute('data-target');
+            document.getElementById(targetId).scrollIntoView({ behavior: 'smooth' });
+            setTimeout(() => { userScrolling = true; }, 800);
+        }
+    }
+
+    window.addEventListener('scroll', () => {
+        if (!userScrolling || isDragging) return;
+        let current = 0;
+        sections.forEach((section, i) => {
+            const rect = section.getBoundingClientRect();
+            if (rect.top <= window.innerHeight / 2) current = i;
+        });
+        snapTo(current, false);
+    });
+
+    // CRITICAL: Re-calculate on Resize
+    window.addEventListener('resize', () => {
+        let current = 0;
+        sections.forEach((section, i) => {
+            const rect = section.getBoundingClientRect();
+            if (rect.top <= window.innerHeight / 2) current = i;
+        });
+        snapTo(current, false);
+    });
+
+    window.onload = () => snapTo(0, false);
+
+    // Pointer Logic
+    container.addEventListener('pointerdown', (e) => {
+        isDragging = true;
+        startX = e.clientX;
+        pillStartX = pill.offsetLeft;
+        pill.style.transition = "none";
+        highLayer.style.transition = "none";
+        lowLayer.style.transition = "none";
+        container.setPointerCapture(e.pointerId);
+    });
+
+    container.addEventListener('pointermove', (e) => {
+        if (!isDragging) return;
+        let newLeft = pillStartX + (e.clientX - startX);
+        const p = window.innerWidth <= 768 ? 6 : 8;
+        const maxRight = container.offsetWidth - pill.offsetWidth - p;
+        if (newLeft < p) newLeft = p;
+        if (newLeft > maxRight) newLeft = maxRight;
+        updateVisuals(newLeft, pill.offsetWidth);
+    });
+
+    container.addEventListener('pointerup', (e) => {
+        if (!isDragging) return;
+        isDragging = false;
+        const moveX = Math.abs(e.clientX - startX);
+        if (moveX < 15) {
+            items.forEach((item, index) => {
+                const rect = item.getBoundingClientRect();
+                if (e.clientX >= rect.left && e.clientX <= rect.right) snapTo(index, true);
+            });
+            return;
+        }
+        let closest = 0;
+        let min = Infinity;
+        items.forEach((item, i) => {
+            const dist = Math.abs((item.offsetLeft + item.offsetWidth/2) - (pill.offsetLeft + pill.offsetWidth/2));
+            if (dist < min) { min = dist; closest = i; }
+        });
+        snapTo(closest, true);
+    });
+</script>
+</body>
+</html>
